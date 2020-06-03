@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature;
 
 use Storage;
@@ -12,7 +14,8 @@ class ProfileTest extends TestCase
 {
     use DatabaseMigrations;
 
-    private object $user, $profile;
+    private object $user;
+    private object $profile;
 
     public function setUp(): void
     {
@@ -21,19 +24,17 @@ class ProfileTest extends TestCase
         Storage::disk('public')->makeDirectory('avatars');
         $this->user = create(User::class);
         $this->profile = create(Profile::class, [
-            'user_id' => $this->user->id
+            'user_id' => $this->user->id,
         ]);
     }
 
     /**
      * Test profile.
-     *
-     * @return void
      */
     public function testProfileAvatar(): void
     {
         // Create a profile and set the user id to the user in the constructor
-        $this->profile->addMedia(storage_path('app/public/' . $this->profile->avatar))
+        $this->profile->addMedia(storage_path('app/public/'.$this->profile->avatar))
             ->toMediaCollection();
         $this->assertNotEquals('/images/avatar.png', $this->user->avatar);
         $this->assertNotEquals('/images/avatar.png', $this->user->accountMenuAvatar);
