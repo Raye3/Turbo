@@ -1,44 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Nova;
 
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Gravatar;
 use Laravel\Nova\Fields\ID;
-use Laravel\Nova\Fields\MorphToMany;
 use Laravel\Nova\Fields\Password;
 use Laravel\Nova\Fields\Text;
-use Vyuldashev\NovaPermission\Permission;
-use Vyuldashev\NovaPermission\PermissionBooleanGroup;
-use Vyuldashev\NovaPermission\Role;
-use Vyuldashev\NovaPermission\RoleBooleanGroup;
 
 class User extends Resource
 {
-    /**
-     * Get the displayable label of the resource.
-     */
-    public static function label(): string
-    {
-        return __('Users');
-    }
-
-    /**
-     * Get the displayable singular label of the resource.
-     */
-    public static function singularLabel(): string
-    {
-        return __('User');
-    }
-
     /**
      * The model the resource corresponds to.
      *
      * @var string
      */
-    public static $model = 'App\User';
+    public static $model = \App\User::class;
 
     /**
      * The single value that should be used to represent the resource when being displayed.
@@ -59,6 +36,7 @@ class User extends Resource
     /**
      * Get the fields displayed by the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function fields(Request $request)
@@ -66,25 +44,19 @@ class User extends Resource
         return [
             ID::make()->sortable(),
 
-            MorphToMany::make('Roles', 'roles', Role::class),
-            MorphToMany::make('Permissions', 'permissions', Permission::class),
-
-            RoleBooleanGroup::make('Roles'),
-            PermissionBooleanGroup::make('Permissions'),
-
             Gravatar::make()->maxWidth(50),
 
-            Text::make(__('Name'), 'name')
+            Text::make('Name')
                 ->sortable()
                 ->rules('required', 'max:255'),
 
-            Text::make(__('Email'), 'email')
+            Text::make('Email')
                 ->sortable()
                 ->rules('required', 'email', 'max:254')
                 ->creationRules('unique:users,email')
                 ->updateRules('unique:users,email,{{resourceId}}'),
 
-            Password::make(__('Password'), 'password')
+            Password::make('Password')
                 ->onlyOnForms()
                 ->creationRules('required', 'string', 'min:8')
                 ->updateRules('nullable', 'string', 'min:8'),
@@ -94,6 +66,7 @@ class User extends Resource
     /**
      * Get the cards available for the request.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function cards(Request $request)
@@ -104,6 +77,7 @@ class User extends Resource
     /**
      * Get the filters available for the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function filters(Request $request)
@@ -114,6 +88,7 @@ class User extends Resource
     /**
      * Get the lenses available for the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function lenses(Request $request)
@@ -124,6 +99,7 @@ class User extends Resource
     /**
      * Get the actions available for the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function actions(Request $request)
